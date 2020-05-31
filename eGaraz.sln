@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eGaraz", "eGaraz\eGaraz.csproj", "{5E76EED0-4766-49F1-B943-663CE1DA4463}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eGarazTests", "eGarazTests\eGarazTests.csproj", "{402C4AF3-2B4A-49CB-89D6-7FC269C98FCB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5E76EED0-4766-49F1-B943-663CE1DA4463}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E76EED0-4766-49F1-B943-663CE1DA4463}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E76EED0-4766-49F1-B943-663CE1DA4463}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E76EED0-4766-49F1-B943-663CE1DA4463}.Release|Any CPU.Build.0 = Release|Any CPU
+		{402C4AF3-2B4A-49CB-89D6-7FC269C98FCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{402C4AF3-2B4A-49CB-89D6-7FC269C98FCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{402C4AF3-2B4A-49CB-89D6-7FC269C98FCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{402C4AF3-2B4A-49CB-89D6-7FC269C98FCB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AA7BBEAB-5173-4D9E-A3CC-6A6B40A455FF}
+	EndGlobalSection
+EndGlobal
