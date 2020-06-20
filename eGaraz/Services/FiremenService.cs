@@ -1,7 +1,9 @@
 ﻿using eGaraz.Models;
 using eGaraz.Services.Interfaces;
+using eGaraz.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +31,7 @@ namespace eGaraz.Services
         /// </summary>
         /// <param name="firemen">Firemen entity</param>
         /// <returns></returns>
-        public async Task<Result> CreateFiremenAsync(Firemen firemen)
+        public async Task<FiremenVM> CreateFiremenAsync(Firemen firemen)
         {
             if (firemen == null)
                 throw new ArgumentNullException("Firemen entity cannot be null.");
@@ -42,9 +44,38 @@ namespace eGaraz.Services
             bool result = await context.SaveChangesAsync() > 0;
 
             if (result)
-                return new Result { Succedeed = true };
+                return new FiremenVM { Firemen = firemen };
             else
-                return new Result { Succedeed = false, ErrorMessage = "Wystąpił problem, spróbuj ponownie później." };
+                throw new Exception($"Firemen entity was not updated in database");
+        }
+
+        public async Task<FiremenVM> UpdateFiremenAsync(Firemen firemen)
+        {
+            if (firemen == null)
+                throw new ArgumentNullException("Firemen entity cannot be null");
+
+            if (firemen.Id <= 0)
+                throw new ArgumentException("Firemen ID must be greather than zero");
+
+            Firemen firemenToUpdate = await context.Firemens
+                .AsNoTracking()
+                .Where(w => w.Deleted != true)
+                .FirstOrDefaultAsync(f => f.Id == firemen.Id);
+
+            if (firemenToUpdate == null)
+                throw new Exception("Firemen not found");
+
+            firemen.UpdatedAt = DateTime.Now;
+            firemen.UpdatedBy = await userManager.FindByNameAsync(httpContextAccessor.HttpContext.User.Identity.Name);
+
+            context.Firemens.Attach(firemen).State = EntityState.Modified;
+
+            bool result = await context.SaveChangesAsync() > 0;
+
+            if (result)
+                return new FiremenVM { Firemen = firemen };
+            else
+                throw new Exception("Firemen entity was not updated in database");
         }
     }
 }

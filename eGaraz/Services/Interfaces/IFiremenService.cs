@@ -1,4 +1,5 @@
 ﻿using eGaraz.Models;
+using eGaraz.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace eGaraz.Services.Interfaces
 {
-    interface IFiremenService
+    public interface IFiremenService
     {
-        Task<Result> CreateFiremenAsync(Firemen firemen);
+        Task<FiremenVM> CreateFiremenAsync(Firemen firemen);
+        Task<FiremenVM> UpdateFiremenAsync(Firemen firemen);
     }
 }

@@ -40,6 +40,7 @@ namespace eGarazTests
             mockAccessor.Setup(s => s.HttpContext.User.Identity.Name).Returns("Frank");
         }
 
+        #region CreateFiremenAsync
         [Test]
         public async Task CreateAsyncFiremenTest()
         {
@@ -70,7 +71,7 @@ namespace eGarazTests
                 var result = await firemenService.CreateFiremenAsync(firemen);
 
                 //Assert
-                Assert.IsTrue(result.Succedeed);
+                //Assert.IsTrue(result.Succedeed);
                 Assert.That(context.Firemens.Count() == 1);
                 Assert.That(context.Firemens.First().Name == "Jan");
                 Assert.That(context.Firemens.First().Surname == "Kowalski");
@@ -91,7 +92,7 @@ namespace eGarazTests
         }
 
         [Test]
-        public void Throws_If_Firemen_Entity_Will_Be_Null()
+        public void Throws_If_Firemen_Entity_Will_Be_Null_CreateFiremenAsync()
         {
             using (var context = new AppDbContext(options))
             {
@@ -100,5 +101,188 @@ namespace eGarazTests
                 Assert.ThrowsAsync<ArgumentNullException>(async () => await firemenService.CreateFiremenAsync(null));
             }
         }
+        #endregion
+
+        #region UpdateFiremenAsync
+        [Test]
+        public async Task UpdateFiremenAsyncTest()
+        {
+            var firemen = new Firemen
+            {
+                Id = 2,
+                Name = "Jan",
+                Surname = "Kowalski",
+                Birthdate = DateTime.Today,
+                City = "Kraków",
+                DigitalCode = "31-231",
+                Son_Daughter = "Stefana",
+                Street = "Jasnogórska",
+                Pesel = "87542165874",
+                Management = true,
+                HouseNumber = "146B",
+                Gender = Gender.Male,
+                Active = true,
+                Function = "Kierowca",
+                FlatNumber = 5,
+            };
+
+            var editedFiremen = new Firemen
+            {
+                Id = 2,
+                Name = "Justyna",
+                Surname = "Wierna",
+                Birthdate = DateTime.Today,
+                City = "Katowice",
+                DigitalCode = "32-065",
+                Son_Daughter = "Marka",
+                Street = "BakerStreet",
+                Pesel = "56482548796",
+                Management = false,
+                HouseNumber = "221B",
+                Gender = Gender.Female,
+                Active = false,
+                Function = "Stra¿ak-Ratownik",
+                FlatNumber = 6,
+                ApplicationUser = new ApplicationUser { }
+            };
+
+            using (var context = new AppDbContext(options))
+            {
+                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+
+                await firemenService.CreateFiremenAsync(firemen);
+
+                context.Entry(firemen).State = EntityState.Detached;
+
+                var result = await firemenService.UpdateFiremenAsync(editedFiremen);
+
+                var foundFiremen = await context.Firemens.FindAsync(2);
+
+                //Assert.IsTrue(result.Succedeed);
+                //Assert.IsNotNull(result.ViewModel);
+                Assert.That(foundFiremen.Name == "Justyna");
+                Assert.That(foundFiremen.Surname == "Wierna");
+                Assert.That(foundFiremen.Birthdate.Equals(DateTime.Today));
+                Assert.That(foundFiremen.City == "Katowice");
+                Assert.That(foundFiremen.DigitalCode == "32-065");
+                Assert.That(foundFiremen.Street == "BakerStreet");
+                Assert.That(foundFiremen.Pesel == "56482548796");
+                Assert.That(foundFiremen.Son_Daughter == "Marka");
+                Assert.That(!foundFiremen.Management);
+                Assert.That(foundFiremen.HouseNumber == "221B");
+                Assert.That(foundFiremen.Gender == Gender.Female);
+                Assert.That(!foundFiremen.Active);
+                Assert.That(foundFiremen.Function == "Stra¿ak-Ratownik");
+                Assert.That(foundFiremen.FlatNumber == 6);
+                Assert.IsNotNull(foundFiremen.UpdatedAt);
+                Assert.IsNotNull(foundFiremen.UpdatedBy);
+            }
+        }
+
+        [Test]
+        public void Throws_If_Firemen_Entity_Will_Be_Null_UpdateFiremenAsync()
+        {
+            using (var context = new AppDbContext(options))
+            {
+                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+
+                Assert.ThrowsAsync<ArgumentNullException>(async () => await firemenService.UpdateFiremenAsync(null));
+            }
+        }
+
+        [TestCase(0)]
+        [TestCase(-1)]
+        public void Throws_If_Firemen_ID_Wont_Be_Greater_Than_Zero_UpdateFiremenAsync(int id)
+        {
+            var firemen = new Firemen
+            {
+                Id = id,
+                Name = "Jan",
+                Surname = "Kowalski",
+                Birthdate = DateTime.Today,
+                City = "Kraków",
+                DigitalCode = "31-231",
+                Son_Daughter = "Stefana",
+                Street = "Jasnogórska",
+                Pesel = "87542165874",
+                Management = true,
+                HouseNumber = "146B",
+                Gender = Gender.Male,
+                Active = true,
+                Function = "Kierowca",
+                FlatNumber = 5,
+            };
+
+            using (var context = new AppDbContext(options))
+            {
+                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+
+                Assert.ThrowsAsync<ArgumentException>(async () => await firemenService.UpdateFiremenAsync(firemen));
+            }
+        }
+
+        [Test]
+        public void Throws_If_Firemen_Was_Not_Found_UpdateFiremenAsync()
+        {
+            var firemen = new Firemen
+            {
+                Id = 5,
+                Name = "Jan",
+                Surname = "Kowalski",
+                Birthdate = DateTime.Today,
+                City = "Kraków",
+                DigitalCode = "31-231",
+                Son_Daughter = "Stefana",
+                Street = "Jasnogórska",
+                Pesel = "87542165874",
+                Management = true,
+                HouseNumber = "146B",
+                Gender = Gender.Male,
+                Active = true,
+                Function = "Kierowca",
+                FlatNumber = 5,
+            };
+
+            using (var context = new AppDbContext(options))
+            {
+                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+
+                Assert.ThrowsAsync<Exception>(async () => await firemenService.UpdateFiremenAsync(firemen));
+            }
+        }
+
+        [Test]
+        public async Task Throws_If_Firemen_Deleted_Property_Will_Be_True_UpdateFiremenAsync()
+        {
+            var firemen = new Firemen
+            {
+                Id = 3,
+                Name = "Jan",
+                Surname = "Kowalski",
+                Birthdate = DateTime.Today,
+                City = "Kraków",
+                DigitalCode = "31-231",
+                Son_Daughter = "Stefana",
+                Street = "Jasnogórska",
+                Pesel = "87542165874",
+                Management = true,
+                HouseNumber = "146B",
+                Gender = Gender.Male,
+                Active = true,
+                Function = "Kierowca",
+                FlatNumber = 5,
+                Deleted = true
+            };
+
+            using (var context = new AppDbContext(options))
+            {
+                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+
+                await firemenService.CreateFiremenAsync(firemen);
+
+                Assert.ThrowsAsync<Exception>(async () => await firemenService.UpdateFiremenAsync(firemen));
+            }
+        }
+        #endregion
     }
 }
