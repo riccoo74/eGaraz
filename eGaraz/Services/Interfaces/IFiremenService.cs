@@ -30,9 +30,17 @@ namespace eGaraz.Services.Interfaces
         /// </summary>
         /// <param name="id">Firemen id</param>
         /// <exception cref="ArgumentException">When Firemen ID won't be greather than zero</exception>
-        /// <exception cref="Exception">When firemen will not found</exception>
+        /// <exception cref="Exception">When Firemen will not found</exception>
         /// <exception cref="Exception">When Firemen has been already deleted</exception>
         /// <exception cref="Exception">When Firemen won't be updated in database</exception>
         Task DeleteFiremenAsync(int id);
+
+        /// <summary>
+        /// Gets a firemen from the database
+        /// </summary>
+        /// <param name="id">Firemen id</param>
+        /// <exception cref="ArgumentException">When Firemen ID won't be greather than zero</exception>
+        /// <exception cref="Exception">When Firemen will not found</exception>
+        Task<FiremenVM> GetFiremenById(int id);
     }
 }

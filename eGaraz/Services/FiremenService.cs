@@ -97,5 +97,22 @@ namespace eGaraz.Services
             if (await context.SaveChangesAsync() < 0)
                 throw new Exception($"Firemen entity(ID: {firemen.Id}) was not updated in database");
         }
+
+        /// <inheritdoc />
+        public async Task<FiremenVM> GetFiremenById(int id)
+        {
+            if (id <= 0)
+                throw new ArgumentException("ID must be greather than zero");
+
+            var firemen = await context.Firemens
+                .Where(w => w.Deleted != true)
+                .FirstOrDefaultAsync(f => f.Id == id);
+
+            if (firemen == null)
+                throw new Exception($"Firemen(ID: {id}) was not found");
+
+            return new FiremenVM { Firemen = firemen };
+
+        }
     }
 }

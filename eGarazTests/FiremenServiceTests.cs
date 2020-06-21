@@ -380,5 +380,66 @@ namespace eGarazTests
             }
         }
         #endregion
+
+        #region GetFiremenById
+
+        [TestCase(0)]
+        [TestCase(-10)]
+        public void Throws_If_ID_Wont_Be_Greather_Than_Zero_GetFiremenById(int id)
+        {
+            using (var context = new AppDbContext(options))
+            {
+                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+
+                Assert.ThrowsAsync<ArgumentException>(async () => await firemenService.GetFiremenById(id));
+            }
+        }
+
+        [Test]
+        public void Throws_If_Firemen_Was_Not_Found_GetFiremenById()
+        {
+            using (var context = new AppDbContext(options))
+            {
+                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+
+                Assert.ThrowsAsync<Exception>(async () => await firemenService.GetFiremenById(20));
+            }
+        }
+
+        [Test]
+        public async Task GetFiremenByIdTest()
+        {
+            var firemen = new Firemen
+            {
+                Id = 11,
+                Name = "Jan",
+                Surname = "Kowalski",
+                Birthdate = DateTime.Today,
+                City = "Kraków",
+                DigitalCode = "31-231",
+                Son_Daughter = "Stefana",
+                Street = "Jasnogórska",
+                Pesel = "87542165874",
+                Management = true,
+                HouseNumber = "146B",
+                Gender = Gender.Male,
+                Active = true,
+                Function = "Kierowca",
+                FlatNumber = 5,
+            };
+
+            using (var context = new AppDbContext(options))
+            {
+                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+
+                await firemenService.CreateFiremenAsync(firemen);
+
+                var result = await firemenService.GetFiremenById(11);
+
+                Assert.IsNotNull(result);
+                Assert.IsNotNull(result.Firemen);
+            }
+        }
+        #endregion
     }
 }
