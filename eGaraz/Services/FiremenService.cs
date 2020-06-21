@@ -26,11 +26,7 @@ namespace eGaraz.Services
             this.httpContextAccessor = httpContextAccessor;
         }
 
-        /// <summary>
-        /// Adding firemen to the database and replece property CreatedAt with current DateTime, property CreateBy with current logged user.
-        /// </summary>
-        /// <param name="firemen">Firemen entity</param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public async Task<FiremenVM> CreateFiremenAsync(Firemen firemen)
         {
             if (firemen == null)
@@ -49,7 +45,7 @@ namespace eGaraz.Services
                 throw new Exception($"Firemen entity(ID: {firemen.Id}) was not updated in database");
         }
 
-
+        /// <inheritdoc />
         public async Task<FiremenVM> UpdateFiremenAsync(Firemen firemen)
         {
             if (firemen == null)
@@ -79,6 +75,7 @@ namespace eGaraz.Services
                 throw new Exception(@"Firemen entity(ID: {firemen.Id}) was not updated in database");
         }
 
+        /// <inheritdoc />
         public async Task DeleteFiremenAsync(int id)
         {
            if (id <= 0)
@@ -91,7 +88,7 @@ namespace eGaraz.Services
 
             if (firemen.Deleted.HasValue && firemen.Deleted.Value)
                 throw new Exception($"Firemen has been already deleted by {(firemen.DeletedBy != null ? firemen.DeletedBy.UserName : "null")}" +
-                    $" at {(firemen.DeletedAt.HasValue ? firemen.DeletedAt.Value.ToString("yyyy-MM -dd") : "null")}");
+                    $" at {(firemen.DeletedAt.HasValue ? firemen.DeletedAt.Value.ToString("yyyy-MM-dd") : "null")}");
 
             firemen.Deleted = true;
             firemen.DeletedBy = await userManager.FindByNameAsync(httpContextAccessor.HttpContext.User.Identity.Name);
