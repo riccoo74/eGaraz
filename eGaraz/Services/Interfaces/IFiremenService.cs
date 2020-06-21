@@ -11,5 +11,6 @@ namespace eGaraz.Services.Interfaces
     {
         Task<FiremenVM> CreateFiremenAsync(Firemen firemen);
         Task<FiremenVM> UpdateFiremenAsync(Firemen firemen);
+        Task DeleteFiremenAsync(int id);
     }
 }

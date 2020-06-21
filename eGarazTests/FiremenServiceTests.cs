@@ -42,7 +42,7 @@ namespace eGarazTests
 
         #region CreateFiremenAsync
         [Test]
-        public async Task CreateAsyncFiremenTest()
+        public async Task CreateFiremenAsyncTest()
         {
             //Arrange
             var firemen = new Firemen
@@ -71,7 +71,7 @@ namespace eGarazTests
                 var result = await firemenService.CreateFiremenAsync(firemen);
 
                 //Assert
-                //Assert.IsTrue(result.Succedeed);
+                Assert.IsNotNull(result);
                 Assert.That(context.Firemens.Count() == 1);
                 Assert.That(context.Firemens.First().Name == "Jan");
                 Assert.That(context.Firemens.First().Surname == "Kowalski");
@@ -158,8 +158,7 @@ namespace eGarazTests
 
                 var foundFiremen = await context.Firemens.FindAsync(2);
 
-                //Assert.IsTrue(result.Succedeed);
-                //Assert.IsNotNull(result.ViewModel);
+                Assert.IsNotNull(result);
                 Assert.That(foundFiremen.Name == "Justyna");
                 Assert.That(foundFiremen.Surname == "Wierna");
                 Assert.That(foundFiremen.Birthdate.Equals(DateTime.Today));
@@ -281,6 +280,103 @@ namespace eGarazTests
                 await firemenService.CreateFiremenAsync(firemen);
 
                 Assert.ThrowsAsync<Exception>(async () => await firemenService.UpdateFiremenAsync(firemen));
+            }
+        }
+        #endregion
+
+        #region DeleteFiremenAsync
+
+        [TestCase(0)]
+        [TestCase(-5)]
+        public void Throws_If_ID_Wont_Be_Greather_Than_Zero_DeleteFiremenAsync(int id)
+        {
+            using (var context = new AppDbContext(options))
+            {
+                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+
+                Assert.ThrowsAsync<ArgumentException>(async () => await firemenService.DeleteFiremenAsync(id));
+            }
+        }
+
+        [Test]
+        public void Throws_If_Firemen_Was_Not_Found_DeleteFiremenAsync()
+        {
+            using (var context = new AppDbContext(options))
+            {
+                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+
+                Assert.ThrowsAsync<Exception>(async () => await firemenService.DeleteFiremenAsync(10));
+            }
+        }
+
+        [Test]
+        public async Task Throws_If_Firemen_Deleted_Property_Will_Be_True_DeleteFiremenAsync()
+        {
+            var firemen = new Firemen
+            {
+                Id = 7,
+                Name = "Jan",
+                Surname = "Kowalski",
+                Birthdate = DateTime.Today,
+                City = "Kraków",
+                DigitalCode = "31-231",
+                Son_Daughter = "Stefana",
+                Street = "Jasnogórska",
+                Pesel = "87542165874",
+                Management = true,
+                HouseNumber = "146B",
+                Gender = Gender.Male,
+                Active = true,
+                Function = "Kierowca",
+                FlatNumber = 5,
+                Deleted = true
+            };
+
+            using (var context = new AppDbContext(options))
+            {
+                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+
+                await firemenService.CreateFiremenAsync(firemen);
+
+                Assert.ThrowsAsync<Exception>(async () => await firemenService.DeleteFiremenAsync(7));
+            }
+        }
+
+        [Test]
+        public async Task DeleteFiremenAsyncTest()
+        {
+            var firemen = new Firemen
+            {
+                Id = 4,
+                Name = "Jan",
+                Surname = "Kowalski",
+                Birthdate = DateTime.Today,
+                City = "Kraków",
+                DigitalCode = "31-231",
+                Son_Daughter = "Stefana",
+                Street = "Jasnogórska",
+                Pesel = "87542165874",
+                Management = true,
+                HouseNumber = "146B",
+                Gender = Gender.Male,
+                Active = true,
+                Function = "Kierowca",
+                FlatNumber = 5,
+            };
+
+            using (var context = new AppDbContext(options))
+            {
+                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+
+                await firemenService.CreateFiremenAsync(firemen);
+
+                await firemenService.DeleteFiremenAsync(4);
+
+                var foundFiremen = await context.Firemens.FindAsync(4);
+
+                Assert.IsTrue(foundFiremen.Deleted);
+                Assert.IsNotNull(foundFiremen.DeletedAt);
+                Assert.IsNotNull(foundFiremen.DeletedBy);
             }
         }
         #endregion
