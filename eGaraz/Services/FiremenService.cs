@@ -99,7 +99,7 @@ namespace eGaraz.Services
         }
 
         /// <inheritdoc />
-        public async Task<FiremenVM> GetFiremenById(int id)
+        public async Task<FiremenVM> GetFiremenByIdAsync(int id)
         {
             if (id <= 0)
                 throw new ArgumentException("ID must be greather than zero");

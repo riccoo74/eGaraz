@@ -41,6 +41,6 @@ namespace eGaraz.Services.Interfaces
         /// <param name="id">Firemen id</param>
         /// <exception cref="ArgumentException">When Firemen ID won't be greather than zero</exception>
         /// <exception cref="Exception">When Firemen will not found</exception>
-        Task<FiremenVM> GetFiremenById(int id);
+        Task<FiremenVM> GetFiremenByIdAsync(int id);
     }
 }

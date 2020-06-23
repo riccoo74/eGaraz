@@ -28,7 +28,7 @@ namespace eGarazTests
         public void Setup()
         {
             options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: "eGaraz")
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
 
             mockUser.Setup(s => s.FindByNameAsync(It.IsAny<string>()))
@@ -385,29 +385,29 @@ namespace eGarazTests
 
         [TestCase(0)]
         [TestCase(-10)]
-        public void Throws_If_ID_Wont_Be_Greather_Than_Zero_GetFiremenById(int id)
+        public void Throws_If_ID_Wont_Be_Greather_Than_Zero_GetFiremenByIdAsyncId(int id)
         {
             using (var context = new AppDbContext(options))
             {
                 var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
 
-                Assert.ThrowsAsync<ArgumentException>(async () => await firemenService.GetFiremenById(id));
+                Assert.ThrowsAsync<ArgumentException>(async () => await firemenService.GetFiremenByIdAsync(id));
             }
         }
 
         [Test]
-        public void Throws_If_Firemen_Was_Not_Found_GetFiremenById()
+        public void Throws_If_Firemen_Was_Not_Found_GetFiremenByIdAsyncId()
         {
             using (var context = new AppDbContext(options))
             {
                 var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
 
-                Assert.ThrowsAsync<Exception>(async () => await firemenService.GetFiremenById(20));
+                Assert.ThrowsAsync<Exception>(async () => await firemenService.GetFiremenByIdAsync(20));
             }
         }
 
         [Test]
-        public async Task GetFiremenByIdTest()
+        public async Task GetFiremenByIdAsyncTest()
         {
             var firemen = new Firemen
             {
@@ -434,7 +434,7 @@ namespace eGarazTests
 
                 await firemenService.CreateFiremenAsync(firemen);
 
-                var result = await firemenService.GetFiremenById(11);
+                var result = await firemenService.GetFiremenByIdAsync(11);
 
                 Assert.IsNotNull(result);
                 Assert.IsNotNull(result.Firemen);
