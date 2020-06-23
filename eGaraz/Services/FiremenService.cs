@@ -1,4 +1,5 @@
-﻿using eGaraz.Models;
+﻿using eGaraz.Enums;
+using eGaraz.Models;
 using eGaraz.Services.Interfaces;
 using eGaraz.ViewModels;
 using Microsoft.AspNetCore.Http;
@@ -113,6 +114,27 @@ namespace eGaraz.Services
 
             return new FiremenVM { Firemen = firemen };
 
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<FiremenVM>> GetAllFiremensAsync(EntityStatus entityStatus = EntityStatus.Existing)
+        {
+            if (entityStatus == EntityStatus.Existing)
+                return await context.Firemens
+                    .Where(w => w.Deleted != true)
+                    .Select(s => new FiremenVM { Firemen = s })
+                    .ToListAsync();
+
+            else if (entityStatus == EntityStatus.Deleted)
+                return await context.Firemens
+                    .Where(w => w.Deleted == true)
+                    .Select(s => new FiremenVM { Firemen = s })
+                    .ToListAsync();
+
+            else
+                return await context.Firemens
+                    .Select(s => new FiremenVM { Firemen = s })
+                    .ToListAsync();
         }
     }
 }

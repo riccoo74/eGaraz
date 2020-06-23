@@ -1,4 +1,5 @@
-﻿using System;
+﻿using eGaraz.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -70,11 +71,5 @@ namespace eGaraz.Models
         public ICollection<MedicalExamination> MedicalExaminations { get; set; }
         public IList<FiremenTrip> FiremenTrips { get; set; }
 
-    }
-
-    public enum Gender
-    {
-        Male,
-        Female
     }
 }

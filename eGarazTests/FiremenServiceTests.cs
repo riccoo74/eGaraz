@@ -1,4 +1,5 @@
 using eGaraz;
+using eGaraz.Enums;
 using eGaraz.Models;
 using eGaraz.Services;
 using Microsoft.AspNetCore.Http;
@@ -381,7 +382,7 @@ namespace eGarazTests
         }
         #endregion
 
-        #region GetFiremenById
+        #region GetFiremenByIdAsync
 
         [TestCase(0)]
         [TestCase(-10)]
@@ -438,6 +439,67 @@ namespace eGarazTests
 
                 Assert.IsNotNull(result);
                 Assert.IsNotNull(result.Firemen);
+            }
+        }
+        #endregion
+
+        #region GetAllFiremensAsync
+        [TestCase(EntityStatus.Existing)]
+        [TestCase(EntityStatus.Deleted)]
+        [TestCase(EntityStatus.All)]
+        public async Task GetAllFiremensAsync(EntityStatus entityStatus)
+        {
+            using (var context = new AppDbContext(options))
+            {
+                await context.Firemens.ForEachAsync(f => context.Firemens.Remove(f));
+
+                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+
+                for (int i = 1; i < 7; i++)
+                {
+                    var firemen = new Firemen
+                    {
+                        Id = i,
+                        Name = "Jan",
+                        Surname = "Kowalski",
+                        Birthdate = DateTime.Today,
+                        City = "Kraków",
+                        DigitalCode = "31-231",
+                        Son_Daughter = "Stefana",
+                        Street = "Jasnogórska",
+                        Pesel = "87542165874",
+                        Management = true,
+                        HouseNumber = "146B",
+                        Gender = Gender.Male,
+                        Active = true,
+                        Function = "Kierowca",
+                        FlatNumber = 5,
+                        Deleted = i % 2 == 0 ? true : default(bool)
+                    };
+
+                    await firemenService.CreateFiremenAsync(firemen);
+                }
+
+                var result = await firemenService.GetAllFiremensAsync(entityStatus);
+
+                if (entityStatus == EntityStatus.Existing)
+                {
+                    Assert.IsNotNull(result);
+                    Assert.That(result.Count() == 3);
+                    Assert.That(result.All(a => a.Firemen != null));
+                }
+                else if (entityStatus == EntityStatus.Deleted)
+                {
+                    Assert.IsNotNull(result);
+                    Assert.That(result.Count() == 3);
+                    Assert.That(result.All(a => a.Firemen != null));
+                }
+                else if (entityStatus == EntityStatus.All)
+                {
+                    Assert.IsNotNull(result);
+                    Assert.That(result.Count() == 6);
+                    Assert.That(result.All(a => a.Firemen != null));
+                }
             }
         }
         #endregion

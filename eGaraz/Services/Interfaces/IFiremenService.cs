@@ -1,6 +1,8 @@
-﻿using eGaraz.Models;
+﻿using eGaraz.Enums;
+using eGaraz.Models;
 using eGaraz.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace eGaraz.Services.Interfaces
@@ -42,5 +44,12 @@ namespace eGaraz.Services.Interfaces
         /// <exception cref="ArgumentException">When Firemen ID won't be greather than zero</exception>
         /// <exception cref="Exception">When Firemen will not found</exception>
         Task<FiremenVM> GetFiremenByIdAsync(int id);
+
+        /// <summary>
+        /// Gets all firemens from the database
+        /// </summary>
+        /// <param name="entityStatus">Entity status in the database(Existing, Deleted, All)</param>
+        /// <returns></returns>
+        Task<IEnumerable<FiremenVM>> GetAllFiremensAsync(EntityStatus entityStatus);
     }
 }
