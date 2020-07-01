@@ -15,15 +15,14 @@ using System.Threading.Tasks;
 namespace eGarazTests
 {
     [TestFixture]
-    public class Tests
+    public class FiremenServiceTests
     {
 
         private DbContextOptions<AppDbContext> options;
 
-        private Mock<UserManager<ApplicationUser>> mockUser =
-            new Mock<UserManager<ApplicationUser>>(new Mock<IUserStore<ApplicationUser>>().Object, null, null, null, null, null, null, null, null);
+        private Mock<FakeUserManager> userManager = new Mock<FakeUserManager>();
 
-        private Mock<IHttpContextAccessor> mockAccessor = new Mock<IHttpContextAccessor>();
+        private Mock<IHttpContextAccessor> httpContextAccessor = new Mock<IHttpContextAccessor>();
 
         [SetUp]
         public void Setup()
@@ -32,13 +31,13 @@ namespace eGarazTests
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
 
-            mockUser.Setup(s => s.FindByNameAsync(It.IsAny<string>()))
+            userManager.Setup(s => s.FindByNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(new ApplicationUser
                 {
                     UserName = "Frank",
                 });
 
-            mockAccessor.Setup(s => s.HttpContext.User.Identity.Name).Returns("Frank");
+            httpContextAccessor.Setup(s => s.HttpContext.User.Identity.Name).Returns("Frank");
         }
 
         #region CreateFiremenAsync
@@ -67,7 +66,7 @@ namespace eGarazTests
             using (var context = new AppDbContext(options))
             {
                 //Act
-                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+                var firemenService = new FiremenService(context, userManager.Object, httpContextAccessor.Object);
 
                 var result = await firemenService.CreateFiremenAsync(firemen);
 
@@ -97,7 +96,7 @@ namespace eGarazTests
         {
             using (var context = new AppDbContext(options))
             {
-                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+                var firemenService = new FiremenService(context, userManager.Object, httpContextAccessor.Object);
 
                 Assert.ThrowsAsync<ArgumentNullException>(async () => await firemenService.CreateFiremenAsync(null));
             }
@@ -149,7 +148,7 @@ namespace eGarazTests
 
             using (var context = new AppDbContext(options))
             {
-                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+                var firemenService = new FiremenService(context, userManager.Object, httpContextAccessor.Object);
 
                 await firemenService.CreateFiremenAsync(firemen);
 
@@ -184,7 +183,7 @@ namespace eGarazTests
         {
             using (var context = new AppDbContext(options))
             {
-                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+                var firemenService = new FiremenService(context, userManager.Object, httpContextAccessor.Object);
 
                 Assert.ThrowsAsync<ArgumentNullException>(async () => await firemenService.UpdateFiremenAsync(null));
             }
@@ -215,7 +214,7 @@ namespace eGarazTests
 
             using (var context = new AppDbContext(options))
             {
-                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+                var firemenService = new FiremenService(context, userManager.Object, httpContextAccessor.Object);
 
                 Assert.ThrowsAsync<ArgumentException>(async () => await firemenService.UpdateFiremenAsync(firemen));
             }
@@ -245,7 +244,7 @@ namespace eGarazTests
 
             using (var context = new AppDbContext(options))
             {
-                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+                var firemenService = new FiremenService(context, userManager.Object, httpContextAccessor.Object);
 
                 Assert.ThrowsAsync<Exception>(async () => await firemenService.UpdateFiremenAsync(firemen));
             }
@@ -276,7 +275,7 @@ namespace eGarazTests
 
             using (var context = new AppDbContext(options))
             {
-                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+                var firemenService = new FiremenService(context, userManager.Object, httpContextAccessor.Object);
 
                 await firemenService.CreateFiremenAsync(firemen);
 
@@ -293,7 +292,7 @@ namespace eGarazTests
         {
             using (var context = new AppDbContext(options))
             {
-                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+                var firemenService = new FiremenService(context, userManager.Object, httpContextAccessor.Object);
 
                 Assert.ThrowsAsync<ArgumentException>(async () => await firemenService.DeleteFiremenAsync(id));
             }
@@ -304,7 +303,7 @@ namespace eGarazTests
         {
             using (var context = new AppDbContext(options))
             {
-                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+                var firemenService = new FiremenService(context, userManager.Object, httpContextAccessor.Object);
 
                 Assert.ThrowsAsync<Exception>(async () => await firemenService.DeleteFiremenAsync(10));
             }
@@ -335,7 +334,7 @@ namespace eGarazTests
 
             using (var context = new AppDbContext(options))
             {
-                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+                var firemenService = new FiremenService(context, userManager.Object, httpContextAccessor.Object);
 
                 await firemenService.CreateFiremenAsync(firemen);
 
@@ -367,7 +366,7 @@ namespace eGarazTests
 
             using (var context = new AppDbContext(options))
             {
-                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+                var firemenService = new FiremenService(context, userManager.Object, httpContextAccessor.Object);
 
                 await firemenService.CreateFiremenAsync(firemen);
 
@@ -390,7 +389,7 @@ namespace eGarazTests
         {
             using (var context = new AppDbContext(options))
             {
-                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+                var firemenService = new FiremenService(context, userManager.Object, httpContextAccessor.Object);
 
                 Assert.ThrowsAsync<ArgumentException>(async () => await firemenService.GetFiremenByIdAsync(id));
             }
@@ -401,7 +400,7 @@ namespace eGarazTests
         {
             using (var context = new AppDbContext(options))
             {
-                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+                var firemenService = new FiremenService(context, userManager.Object, httpContextAccessor.Object);
 
                 Assert.ThrowsAsync<Exception>(async () => await firemenService.GetFiremenByIdAsync(20));
             }
@@ -431,7 +430,7 @@ namespace eGarazTests
 
             using (var context = new AppDbContext(options))
             {
-                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+                var firemenService = new FiremenService(context, userManager.Object, httpContextAccessor.Object);
 
                 await firemenService.CreateFiremenAsync(firemen);
 
@@ -453,7 +452,7 @@ namespace eGarazTests
             {
                 await context.Firemens.ForEachAsync(f => context.Firemens.Remove(f));
 
-                var firemenService = new FiremenService(context, mockUser.Object, mockAccessor.Object);
+                var firemenService = new FiremenService(context, userManager.Object, httpContextAccessor.Object);
 
                 for (int i = 1; i < 7; i++)
                 {
